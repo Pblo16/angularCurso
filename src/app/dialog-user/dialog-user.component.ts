@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import {
   Component,
 } from '@angular/core';
@@ -11,8 +12,6 @@ export interface IDataTable {
   name: string;
   email: string;
   password: string;
-  created_at: string;
-  updated_at: string;
 }
 
 @Component({
@@ -29,8 +28,7 @@ export interface IDataTable {
 })
 export class DialogUserComponent {
   public formUsuario: FormGroup;
-
-  constructor() {
+  constructor(private httpClient: HttpClient) {
     this.formUsuario = new FormGroup({
       name: new FormControl('', [Validators.required]),
       email: new FormControl('', [Validators.required, Validators.email]),
@@ -41,9 +39,29 @@ export class DialogUserComponent {
   guardar() {
     if (this.formUsuario.valid) {
       console.log('Guardando...', this.formUsuario.value);
-      this.formUsuario.reset();
+
+      const body: Omit<IDataTable, 'id'> = {
+        name: this.formUsuario.value.name,
+        email: this.formUsuario.value.email,
+        password: this.formUsuario.value.password
+      };
+
+      this.httpClient.post<IDataTable>('http://localhost:3000/api/users/', body)
+        .subscribe({
+          next: (response) => {
+            console.log('Usuario guardado correctamente:', response);
+            this.formUsuario.reset();
+          },
+          error: (error) => {
+            console.error('Error al guardar el usuario:', error);
+          }
+        });
     } else {
       console.log('Formulario inválido');
+      // Marcar todos los campos como tocados para mostrar los errores
+      Object.keys(this.formUsuario.controls).forEach(key => {
+        this.formUsuario.get(key)?.markAsTouched();
+      });
     }
   }
 }

@@ -1,0 +1,17 @@
+.edit-dialog {
+  padding: 16px;
+}
+
+.dialog-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 300px;
+  margin-bottom: 16px;
+}
+
+.error-message {
+  margin: 16px 0;
+  color: #f44336;
+  font-size: 14px;
+}

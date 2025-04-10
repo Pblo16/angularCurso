@@ -1,0 +1,17 @@
+<div class="delete-dialog">
+  <h2 mat-dialog-title>Confirmar eliminación</h2>
+  <mat-dialog-content>
+    <p>¿Está seguro que desea eliminar el usuario con ID: {{ data.userId }}?</p>
+    <p>Esta acción no se puede deshacer.</p>
+
+    <div *ngIf="errorMessage" class="error-message">
+      {{ errorMessage }}
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button [disabled]="isDeleting" (click)="onCancel()">Cancelar</button>
+    <button mat-raised-button color="warn" [disabled]="isDeleting" (click)="onConfirm()">
+      {{ isDeleting ? 'Eliminando...' : 'Eliminar' }}
+    </button>
+  </mat-dialog-actions>
+</div>

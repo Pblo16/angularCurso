@@ -5,6 +5,8 @@ import { UsuarioService } from './usuario.service';
 import { Subscription } from 'rxjs';
 import { DialogUserComponent } from './dialog-user/dialog-user.component';
 import { MatDialog } from '@angular/material/dialog';
+import { DialogDeleteComponent } from './dialog-delete/dialog-delete.component';
+import { DialogEditUserComponent } from './dialog-edit-user/dialog-edit-user.component';
 
 export interface IDataTable {
   id: number;
@@ -18,7 +20,7 @@ export interface IDataTable {
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [MatTableModule, CommonModule, DialogUserComponent],
+  imports: [MatTableModule, CommonModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })
@@ -28,7 +30,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   private subscription = new Subscription();
 
-  constructor(private usuarioService: UsuarioService) {}
+  constructor(private usuarioService: UsuarioService) { }
 
   ngOnInit(): void {
     // Lo que este aquí va ser lo primero en ejecutarse al llamar el componente
@@ -56,6 +58,7 @@ export class AppComponent implements OnInit, OnDestroy {
     'email',
     'created_at',
     'updated_at',
+    'actions',
   ];
   // dataSource = ELEMENT_DATA;
   title = 'angularCurso';
@@ -67,7 +70,51 @@ export class AppComponent implements OnInit, OnDestroy {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      console.log('The dialog was closed');
+      if (result === true) {
+        // If deletion was confirmed and successful, refresh the user list
+        this.refreshUsers();
+      }
     });
+  }
+
+  openDialogDelete(id: number): void {
+    const dialogRef = this.dialog.open(DialogDeleteComponent, {
+      width: '400px',
+      data: { userId: id }
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result === true) {
+        // If deletion was confirmed and successful, refresh the user list
+        this.refreshUsers();
+      }
+    });
+  }
+
+  openDialogEdit(id: number): void {
+    const dialogRef = this.dialog.open(DialogEditUserComponent, {
+      width: '500px',
+      data: { userId: id }
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result === true) {
+        // If the user was successfully updated, refresh the list
+        this.refreshUsers();
+      }
+    });
+  }
+
+  refreshUsers(): void {
+    this.subscription.add(
+      this.usuarioService.getUsuarios().subscribe({
+        next: (data) => {
+          this.dataSource = data;
+        },
+        error: (error) => {
+          console.error('Error obteniendo usuarios:', error);
+        },
+      })
+    );
   }
 }
