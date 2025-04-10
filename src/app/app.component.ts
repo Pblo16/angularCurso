@@ -74,10 +74,12 @@ export class AppComponent implements OnInit, OnDestroy {
         // If deletion was confirmed and successful, refresh the user list
         this.refreshUsers();
       }
-    });
+    }
+    );
   }
 
   openDialogDelete(id: number): void {
+
     const dialogRef = this.dialog.open(DialogDeleteComponent, {
       width: '400px',
       data: { userId: id }
